@@ -1,4 +1,4 @@
-package com.example.java_backend;
+package com.example.java_backend.controllers;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
