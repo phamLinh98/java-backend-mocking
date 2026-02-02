@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DI vs new — Khi nào dùng cái nào?</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;400;600;700&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --card-bg: #1a1d27;
+    --card-border: #2a2e3a;
+    --text: #e2e4ea;
+    --text-dim: #6b7080;
+    --green: #4ade80;
+    --green-dim: rgba(74,222,128,0.12);
+    --red: #f87171;
+    --red-dim: rgba(248,113,113,0.12);
+    --blue: #60a5fa;
+    --blue-dim: rgba(96,165,250,0.12);
+    --yellow: #fbbf24;
+    --yellow-dim: rgba(251,191,36,0.12);
+    --purple: #a78bfa;
+    --purple-dim: rgba(167,139,250,0.12);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Sora', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  .wrapper { max-width: 860px; margin: 0 auto; }
+
+  /* ─── TITLE ─── */
+  .title-block { text-align: center; margin-bottom: 48px; }
+  .title-block h1 {
+    font-size: 1.9rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+  }
+  .title-block p { color: var(--text-dim); font-size: 0.88rem; }
+
+  /* ─── DECISION FLOW ─── */
+  .flow { display: flex; flex-direction: column; align-items: center; gap: 0; }
+
+  .flow-box {
+    width: 100%;
+    max-width: 540px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 22px 24px;
+    position: relative;
+    transition: border-color .2s;
+  }
+  .flow-box:hover { border-color: var(--blue); }
+
+  .flow-box .label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+  .flow-box .question {
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  /* arrow between boxes */
+  .arrow {
+    width: 2px;
+    height: 28px;
+    background: var(--card-border);
+    position: relative;
+  }
+  .arrow::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 7px solid var(--card-border);
+  }
+
+  /* ─── SPLIT (Yes / No) ─── */
+  .split {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+    max-width: 860px;
+  }
+  .split-side { flex: 1; display: flex; flex-direction: column; align-items: center; }
+
+  .badge {
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+  }
+  .badge.yes { background: var(--green-dim); color: var(--green); }
+  .badge.no  { background: var(--red-dim);   color: var(--red); }
+
+  /* ─── RESULT CARD ─── */
+  .result-card {
+    width: 100%;
+    border-radius: 14px;
+    padding: 20px;
+    border: 1px solid;
+  }
+  .result-card.new-card {
+    background: var(--green-dim);
+    border-color: rgba(74,222,128,0.3);
+  }
+  .result-card.di-card {
+    background: var(--blue-dim);
+    border-color: rgba(96,165,250,0.3);
+  }
+
+  .result-card .res-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .result-card.new-card .res-title { color: var(--green); }
+  .result-card.di-card  .res-title { color: var(--blue); }
+
+  .result-card .res-title .icon { font-size: 1.2rem; }
+
+  .result-card code {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    background: rgba(0,0,0,0.35);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text);
+    line-height: 1.6;
+    margin: 10px 0;
+    white-space: pre;
+  }
+  code .c  { color: var(--text-dim); }
+  code .kw { color: var(--purple); }
+  code .cl { color: var(--yellow); }
+  code .fn { color: var(--blue); }
+  code .st { color: var(--green); }
+  code .nm { color: var(--text); }
+
+  /* ─── SEPARATOR ─── */
+  .section-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    color: var(--text-dim);
+    text-align: center;
+    margin: 38px 0 16px;
+    position: relative;
+  }
+  .section-label::before, .section-label::after {
+    content: '';
+    position: absolute;
+    top: 50%; width: 28%; height: 1px;
+    background: var(--card-border);
+  }
+  .section-label::before { left: 0; }
+  .section-label::after  { right: 0; }
+
+  /* ─── COMPARISON TABLE ─── */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 8px;
+  }
+  .cmp-col {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .cmp-col .cmp-head {
+    padding: 12px 16px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .cmp-col.green-col .cmp-head { background: var(--green-dim); color: var(--green); }
+  .cmp-col.blue-col  .cmp-head { background: var(--blue-dim);  color: var(--blue);  }
+
+  .cmp-col .cmp-row {
+    padding: 11px 16px;
+    border-top: 1px solid var(--card-border);
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--text-dim);
+  }
+  .cmp-col .cmp-row strong { color: var(--text); font-weight: 600; }
+
+  /* ─── BUG DEMO ─── */
+  .bug-section {
+    margin-top: 38px;
+  }
+  .bug-box {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .bug-box .bug-head {
+    padding: 14px 18px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    background: var(--red-dim);
+    color: var(--red);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .bug-box .bug-body { padding: 18px; }
+  .bug-box .bug-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+    margin-top: 14px;
+  }
+  .bug-box .bug-label:first-child { margin-top: 0; }
+
+  .timeline {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .t-item {
+    flex: 1;
+    background: rgba(0,0,0,0.3);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    line-height: 1.6;
+  }
+  .t-item .t-head {
+    color: var(--blue);
+    font-weight: 600;
+    margin-bottom: 4px;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+  .t-item.danger { border: 1px solid rgba(248,113,113,0.3); background: var(--red-dim); }
+  .t-item.danger .t-head { color: var(--red); }
+
+  .note {
+    margin-top: 10px;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+    padding-left: 12px;
+    border-left: 2px solid var(--red);
+  }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    margin-top: 44px;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.75rem;
+  }
+
+  @media (max-width: 600px) {
+    .split { flex-direction: column; }
+    .compare { grid-template-columns: 1fr; }
+    .timeline { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- TITLE -->
+  <div class="title-block">
+    <h1>DI vs <code style="font-family:'JetBrains Mono',monospace;font-size:1.5rem;color:var(--green)">new</code> — Khi nào dùng cái nào?</h1>
+    <p>Sơ đồ quyết định để chọn đúng cách tạo object trong Spring</p>
+  </div>
+
+  <!-- DECISION FLOW -->
+  <div class="flow">
+
+    <div class="flow-box">
+      <div class="label">Bước 1 — Câu hỏi đầu tiên</div>
+      <div class="question">Object này có <strong style="color:var(--yellow)">behavior</strong> (logic nghiệp vụ) và <strong style="color:var(--yellow)">dependency</strong> (cần connect DB, gọi API...) không?</div>
+    </div>
+    <div class="arrow"></div>
+
+    <!-- SPLIT 1 -->
+    <div class="split">
+      <div class="split-side">
+        <div class="badge yes">Có</div>
+        <div class="result-card di-card">
+          <div class="res-title"><span class="icon">💉</span> Dùng DI</div>
+          <code><span class="c">// Spring quản lý, tạo 1 lần</span>
+<span class="kw">@Service</span>
+<span class="kw">class</span> <span class="cl">UserService</span> {
+  <span class="kw">private final</span> <span class="cl">UserRepository</span> repo;
+  <span class="c">// inject qua constructor</span>
+  <span class="cl">UserService</span>(<span class="cl">UserRepository</span> <span class="nm">repo</span>) {
+    <span class="kw">this</span>.repo = repo;
+  }
+}</code>
+        </div>
+      </div>
+      <div class="split-side">
+        <div class="badge no">Không</div>
+        <div class="result-card new-card">
+          <div class="res-title"><span class="icon">✏️</span> Dùng <code style="font-size:0.85rem;background:none;padding:0;margin:0;display:inline">new</code></div>
+          <code><span class="c">// Chỉ là data, không có logic</span>
+<span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">Object</span>&gt; response
+  = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;&gt;();
+
+<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; errors
+  = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
+
+<span class="cl">UserDTO</span> dto = <span class="kw">new</span> <span class="cl">UserDTO</span>();</code>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow" style="margin-top:24px"></div>
+
+    <div class="flow-box">
+      <div class="label">Bước 2 — Nếu đã dùng DI, hỏi thêm</div>
+      <div class="question">Object này cần được <strong style="color:var(--yellow)">reuse</strong> nhiều nơi, hoặc cần <strong style="color:var(--yellow)">mock</strong> trong test không?</div>
+    </div>
+    <div class="arrow"></div>
+
+    <div class="split">
+      <div class="split-side">
+        <div class="badge yes">Có</div>
+        <div class="result-card di-card">
+          <div class="res-title"><span class="icon">♻️</span> Singleton (default)</div>
+          <code><span class="c">// Spring tạo 1 instance dùng cho toàn app</span>
+<span class="kw">@Service</span> <span class="c">// default = singleton</span>
+<span class="kw">class</span> <span class="cl">UserService</span> { ... }
+
+<span class="c">// Dùng ở nhiều nơi, cùng 1 instance</span>
+<span class="kw">class</span> <span class="cl">OrderController</span> {
+  <span class="kw">final</span> <span class="cl">UserService</span> userService; <span class="c">// ← cùng 1</span>
+}
+<span class="kw">class</span> <span class="cl">AuthController</span> {
+  <span class="kw">final</span> <span class="cl">UserService</span> userService; <span class="c">// ← cùng 1</span>
+}</code>
+        </div>
+      </div>
+      <div class="split-side">
+        <div class="badge no">Không — cần mới mỗi lần</div>
+        <div class="result-card new-card">
+          <div class="res-title"><span class="icon">📦</span> Scope = prototype</div>
+          <code><span class="c">// Cần instance mới mỗi lần inject</span>
+<span class="kw">@Bean</span>
+<span class="kw">@Scope</span>(<span class="st">"prototype"</span>)
+<span class="kw">class</span> <span class="cl">ReportBuilder</span> {
+  <span class="kw">private final</span> <span class="cl">List</span> items = <span class="kw">new</span> <span class="cl">ArrayList</span>();
+  <span class="c">// mỗi inject → 1 builder mới</span>
+}</code>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPARISON -->
+  <div class="section-label">So sánh trực tiếp</div>
+  <div class="compare">
+    <div class="cmp-col green-col">
+      <div class="cmp-head">✏️ Dùng <code style="font-family:'JetBrains Mono',monospace;background:none;padding:0;font-size:0.82rem">new</code></div>
+      <div class="cmp-row"><strong>Ai quản lý?</strong> Bạn tự tạo, tự destroy</div>
+      <div class="cmp-row"><strong>Lifecycle?</strong> Ngắn — chỉ trong 1 method/request</div>
+      <div class="cmp-row"><strong>Dùng khi?</strong> Object là data: Map, List, DTO</div>
+      <div class="cmp-row"><strong>Nếu dùng sai?</strong> Không phải vấn đề lớn — chỉ là code không clean</div>
+    </div>
+    <div class="cmp-col blue-col">
+      <div class="cmp-head">💉 Dùng DI</div>
+      <div class="cmp-row"><strong>Ai quản lý?</strong> Spring tạo và quản lý lifecycle</div>
+      <div class="cmp-row"><strong>Lifecycle?</strong> Dài — tồn tại từ app start → stop</div>
+      <div class="cmp-row"><strong>Dùng khi?</strong> Object là service: Repository, Service, DataSource</div>
+      <div class="cmp-row"><strong>Nếu dùng sai?</strong> Có thể cause bug nghiêm trọng (xem dưới)</div>
+    </div>
+  </div>
+
+  <!-- BUG DEMO -->
+  <div class="bug-section">
+    <div class="section-label">❌ Nếu dùng sai — Bug xảy ra như thế nào</div>
+
+    <div class="bug-box">
+      <div class="bug-head">⚠️ Bug: Inject HashMap (data) bằng DI → Concurrency Bug</div>
+      <div class="bug-body">
+
+        <div class="bug-label">Code sai</div>
+        <code style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;background:rgba(0,0,0,0.35);border-radius:8px;padding:10px 14px;display:block;line-height:1.7;margin-top:6px">
+<span class="kw">@Bean</span>
+<span class="kw">public</span> <span class="cl">Map</span> responseMap() { <span class="kw">return new</span> <span class="cl">HashMap</span>(); } <span class="c">// Singleton!</span>
+
+<span class="kw">class</span> <span class="cl">HelloController</span> {
+  <span class="kw">final</span> <span class="cl">Map</span> response; <span class="c">// ← cùng 1 map cho mọi request ⚠️</span>
+  <span class="fn">hello</span>() { response.<span class="fn">put</span>(<span class="st">"user"</span>, ...); }
+}</code>
+
+        <div class="bug-label">Timeline — Hai request chạy cùng lúc</div>
+        <div class="timeline">
+          <div class="t-item">
+            <div class="t-head">Request A</div>
+            response.put("user", "Alice")<br>
+            response.put("msg", "Hi")
+          </div>
+          <div class="t-item">
+            <div class="t-head">Request B</div>
+            response.put("user", "Bob")<br>
+            response.put("msg", "Hello")
+          </div>
+          <div class="t-item danger">
+            <div class="t-head">Kết quả</div>
+            user = "Bob" ← overwrite!<br>
+            msg = "Hello" ← overwrite!<br>
+            <strong style="color:var(--red)">→ Request A nhận data của B</strong>
+          </div>
+        </div>
+
+        <div class="note">
+          Đây là lý do data object phải được <strong style="color:var(--text)">new mỗi request</strong> — mỗi request cần <strong style="color:var(--text)">map riêng</strong>, không share.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">Sơ đồ quyết định · DI vs new · Spring Boot</div>
+</div>
+</body>
+</html>
