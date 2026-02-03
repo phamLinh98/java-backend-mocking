@@ -16,6 +16,12 @@ public class User {
     @Column(nullable = false)
     private Integer age;
     
+    @Column(unique = true, nullable = false)
+    private String username;
+    
+    @Column(nullable = false)
+    private String password;
+    
     // Constructor mặc định - JPA yêu cầu
     public User() {}
     
@@ -23,6 +29,13 @@ public class User {
     public User(String name, Integer age) {
         this.name = name;
         this.age = age;
+    }
+    
+    public User(String name, Integer age, String username, String password) {
+        this.name = name;
+        this.age = age;
+        this.username = username;
+        this.password = password;
     }
     
     // Getters & Setters
@@ -48,5 +61,21 @@ public class User {
     
     public void setAge(Integer age) {
         this.age = age;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
