@@ -1,11 +1,13 @@
 package com.example.java_backend.services;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
 import com.example.java_backend.DTO.UserDTO;
 import com.example.java_backend.entities.User;
 import com.example.java_backend.repositories.UserRepository;
-import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.stream.Collectors;
 
 // Spring bean - inject vào Controller bằng DI
 @Service
