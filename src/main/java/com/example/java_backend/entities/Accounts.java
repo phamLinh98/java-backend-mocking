@@ -17,11 +17,12 @@ public class Accounts {
 
     @Column(nullable = false)
     private String name;
-    
+
     @Column(nullable = false)
     private String role;
 
-    public Accounts() {}
+    public Accounts() {
+    }
 
     public Accounts(String name, String role) {
         this.name = name;
