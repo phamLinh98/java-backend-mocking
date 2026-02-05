@@ -1,22 +1,27 @@
 package com.example.java_backend.controllers;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.java_backend.DTO.ErrorResponse;
 import com.example.java_backend.DTO.LoginRequest;
 import com.example.java_backend.DTO.LoginResponse;
 import com.example.java_backend.entities.User;
 import com.example.java_backend.repositories.UserRepository;
 import com.example.java_backend.utils.JwtUtil;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -62,8 +67,7 @@ public class AuthController {
             LoginResponse loginResponse = new LoginResponse(
                     "Login successful",
                     user.getId(),
-                    user.getUsername()
-            );
+                    user.getUsername());
 
             return ResponseEntity.ok(loginResponse);
 
