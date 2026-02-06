@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -29,14 +28,11 @@ import com.example.java_backend.services.RoleService;
 @CrossOrigin(origins = "*")
 public class RoleController {
 
-        @Autowired
         private final RoleService roleService;
-        // private final RoleDAL roleDAL;
 
         // Constructor Injection
         public RoleController(RoleService roleService) {
                 this.roleService = roleService;
-                // this.roleDAL = roleDAL;
         }
 
         // ==================== JPA Repository Methods ====================
@@ -190,117 +186,132 @@ public class RoleController {
         /**
          * GET /api/roles/dal/all - Lấy tất cả roles (sử dụng DAL với XML-like mapping)
          */
-        @GetMapping("/dal/all")
-        public ResponseEntity<Map<String, Object>> getAllRolesDAL() {
-                try {
-                        List<RoleDTO> roles = roleService.getAllRoles();
-                        Map<String, Object> response = new HashMap<>();
-                        response.put("success", true);
-                        response.put("data", roles);
-                        response.put("message", "Get all roles successfully (DAL)");
-                        return ResponseEntity.ok(response);
-                } catch (Exception e) {
-                        Map<String, Object> response = new HashMap<>();
-                        response.put("success", false);
-                        response.put("message", "Error: " + e.getMessage());
-                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-                }
-        }
+        // @GetMapping("/dal/all")
+        // public ResponseEntity<Map<String, Object>> getAllRolesDAL() {
+        // try {
+        // List<RoleDTO> roles = roleService.getAllRoles();
+        // Map<String, Object> response = new HashMap<>();
+        // response.put("success", true);
+        // response.put("data", roles);
+        // response.put("message", "Get all roles successfully (DAL)");
+        // return ResponseEntity.ok(response);
+        // } catch (Exception e) {
+        // Map<String, Object> response = new HashMap<>();
+        // response.put("success", false);
+        // response.put("message", "Error: " + e.getMessage());
+        // return
+        // ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        // }
+        // }
 
-        /**
-         * GET /api/roles/dal/{id} - Lấy role theo ID (sử dụng DAL)
-         */
-        @GetMapping("/dal/{id}")
-        public ResponseEntity<Map<String, Object>> getRoleByIdDAL(@PathVariable Long id) {
-                try {
-                        RoleDTO role = roleService.getRoleById(id);
-                        Map<String, Object> response = new HashMap<>();
-                        response.put("success", true);
-                        response.put("data", role);
-                        response.put("message", "Get role successfully (DAL)");
-                        return ResponseEntity.ok(response);
-                } catch (Exception e) {
-                        Map<String, Object> response = new HashMap<>();
-                        response.put("success", false);
-                        response.put("message", "Error: " + e.getMessage());
-                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-                }
-        }
+        // /**
+        // * GET /api/roles/dal/{id} - Lấy role theo ID (sử dụng DAL)
+        // */
+        // @GetMapping("/dal/{id}")
+        // public ResponseEntity<Map<String, Object>> getRoleByIdDAL(@PathVariable Long
+        // id) {
+        // try {
+        // RoleDTO role = roleService.getRoleById(id);
+        // Map<String, Object> response = new HashMap<>();
+        // response.put("success", true);
+        // response.put("data", role);
+        // response.put("message", "Get role successfully (DAL)");
+        // return ResponseEntity.ok(response);
+        // } catch (Exception e) {
+        // Map<String, Object> response = new HashMap<>();
+        // response.put("success", false);
+        // response.put("message", "Error: " + e.getMessage());
+        // return
+        // ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        // }
+        // }
 
-        /**
-         * POST /api/roles/dal - Tạo role mới (sử dụng DAL)
-         */
-        @PostMapping("/dal")
-        public ResponseEntity<Map<String, Object>> createRoleDAL(@RequestBody Map<String, String> body) {
-                try {
-                        String roleName = body.get("role");
-                        if (roleName == null || roleName.trim().isEmpty()) {
-                                Map<String, Object> response = new HashMap<>();
-                                response.put("success", false);
-                                response.put("message", "Role name is required");
-                                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-                        }
+        // /**
+        // * POST /api/roles/dal - Tạo role mới (sử dụng DAL)
+        // */
+        // @PostMapping("/dal")
+        // public ResponseEntity<Map<String, Object>> createRoleDAL(@RequestBody
+        // Map<String, String> body) {
+        // try {
+        // String roleName = body.get("role");
+        // if (roleName == null || roleName.trim().isEmpty()) {
+        // Map<String, Object> response = new HashMap<>();
+        // response.put("success", false);
+        // response.put("message", "Role name is required");
+        // return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        // }
 
-                        RoleDTO result = roleService.createRole(roleName);
-                        Map<String, Object> response = new HashMap<>();
-                        response.put("success", true);
-                        response.put("message", "Role created successfully (DAL)");
-                        response.put("rowsAffected", result);
-                        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-                } catch (Exception e) {
-                        Map<String, Object> response = new HashMap<>();
-                        response.put("success", false);
-                        response.put("message", "Error: " + e.getMessage());
-                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-                }
-        }
+        // RoleDTO roleDTO = new RoleDTO(roleName);
+        // RoleDTO result = roleService.createRole(roleDTO);
 
-        /**
-         * PUT /api/roles/dal/{id} - Cập nhật role (sử dụng DAL)
-         */
-        @PutMapping("/dal/{id}")
-        public ResponseEntity<Map<String, Object>> updateRoleDAL(@PathVariable Long id,
-                        @RequestBody Map<String, String> body) {
-                try {
-                        String roleName = body.get("role");
-                        if (roleName == null || roleName.trim().isEmpty()) {
-                                Map<String, Object> response = new HashMap<>();
-                                response.put("success", false);
-                                response.put("message", "Role name is required");
-                                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-                        }
+        // Map<String, Object> response = new HashMap<>();
+        // response.put("success", true);
+        // response.put("message", "Role created successfully (DAL)");
+        // response.put("data", result);
+        // return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        // } catch (Exception e) {
+        // Map<String, Object> response = new HashMap<>();
+        // response.put("success", false);
+        // response.put("message", "Error: " + e.getMessage());
+        // return
+        // ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        // }
+        // }
 
-                        RoleDTO result = roleService.updateRole(id, roleName);
-                        Map<String, Object> response = new HashMap<>();
-                        response.put("success", true);
-                        response.put("message", "Role updated successfully (DAL)");
-                        response.put("rowsAffected", result);
-                        return ResponseEntity.ok(response);
-                } catch (Exception e) {
-                        Map<String, Object> response = new HashMap<>();
-                        response.put("success", false);
-                        response.put("message", "Error: " + e.getMessage());
-                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-                }
-        }
+        // /**
+        // * PUT /api/roles/dal/{id} - Cập nhật role (sử dụng DAL)
+        // */
+        // @PutMapping("/dal/{id}")
+        // public ResponseEntity<Map<String, Object>> updateRoleDAL(@PathVariable Long
+        // id,
+        // @RequestBody Map<String, String> body) {
+        // try {
+        // String roleName = body.get("role");
+        // if (roleName == null || roleName.trim().isEmpty()) {
+        // Map<String, Object> response = new HashMap<>();
+        // response.put("success", false);
+        // response.put("message", "Role name is required");
+        // return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        // }
 
-        /**
-         * DELETE /api/roles/dal/{id} - Xóa role (sử dụng DAL)
-         */
-        @DeleteMapping("/dal/{id}")
-        public ResponseEntity<Map<String, Object>> deleteRoleDAL(@PathVariable Long id) {
-                try {
-                        RoleDTO result = roleService.deleteRole(id);
-                        Map<String, Object> response = new HashMap<>();
-                        response.put("success", true);
-                        response.put("message", "Role deleted successfully (DAL)");
-                        response.put("rowsAffected", result);
-                        return ResponseEntity.ok(response);
-                } catch (Exception e) {
-                        Map<String, Object> response = new HashMap<>();
-                        response.put("success", false);
-                        response.put("message", "Error: " + e.getMessage());
-                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-                }
-        }
+        // // ✅ Tạo DTO ở Controller (giống UserController)
+        // RoleDTO roleDTO = new RoleDTO(roleName);
+        // RoleDTO result = roleService.updateRole(id, roleDTO);
+
+        // Map<String, Object> response = new HashMap<>();
+        // response.put("success", true);
+        // response.put("message", "Role updated successfully (DAL)");
+        // response.put("data", result);
+        // return ResponseEntity.ok(response);
+        // } catch (Exception e) {
+        // Map<String, Object> response = new HashMap<>();
+        // response.put("success", false);
+        // response.put("message", "Error: " + e.getMessage());
+        // return
+        // ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        // }
+        // }
+
+        // /**
+        // * DELETE /api/roles/dal/{id} - Xóa role (sử dụng DAL)
+        // */
+        // @DeleteMapping("/dal/{id}")
+        // public ResponseEntity<Map<String, Object>> deleteRoleDAL(@PathVariable Long
+        // id) {
+        // try {
+        // // ✅ Gọi service (không gán vào biến vì void)
+        // roleService.deleteRole(id);
+
+        // Map<String, Object> response = new HashMap<>();
+        // response.put("success", true);
+        // response.put("message", "Role deleted successfully (DAL)");
+        // return ResponseEntity.ok(response);
+        // } catch (Exception e) {
+        // Map<String, Object> response = new HashMap<>();
+        // response.put("success", false);
+        // response.put("message", "Error: " + e.getMessage());
+        // return
+        // ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        // }
+        // }
 }
