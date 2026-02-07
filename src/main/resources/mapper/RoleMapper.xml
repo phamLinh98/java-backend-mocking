@@ -1,0 +1,61 @@
+R<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.java_backend.mappers.RoleMapper">
+
+    <!-- Result Map cho Role -->
+    <resultMap id="RoleResultMap" type="com.example.java_backend.entities.Role">
+        <id property="id" column="id"/>
+        <result property="role" column="role"/>
+    </resultMap>
+
+    <!-- Lấy tất cả roles -->
+    <select id="getAllRoles" resultMap="RoleResultMap">
+        SELECT id, role 
+        FROM role 
+        ORDER BY id
+    </select>
+
+    <!-- Lấy role theo ID -->
+    <select id="getRoleById" resultMap="RoleResultMap">
+        SELECT id, role 
+        FROM role 
+        WHERE id = #{id}
+    </select>
+
+    <!-- Lấy role theo tên -->
+    <select id="getRoleByName" resultMap="RoleResultMap">
+        SELECT id, role 
+        FROM role 
+        WHERE role = #{roleName}
+    </select>
+
+    <!-- Tạo role mới -->
+    <insert id="insertRole" parameterType="string">
+        INSERT INTO role (role) 
+        VALUES (#{roleName})
+    </insert>
+
+    <!-- Cập nhật role -->
+    <update id="updateRole">
+        UPDATE role 
+        SET role = #{roleName} 
+        WHERE id = #{id}
+    </update>
+
+    <!-- Xóa role -->
+    <delete id="deleteRole">
+        DELETE FROM role 
+        WHERE id = #{id}
+    </delete>
+
+    <!-- Kiểm tra role có tồn tại không -->
+    <select id="existsByRole" resultType="int">
+        SELECT COUNT(*) 
+        FROM role 
+        WHERE role = #{roleName}
+    </select>
+
+</mapper>
