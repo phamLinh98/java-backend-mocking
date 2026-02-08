@@ -84,6 +84,22 @@ public class S3Controller {
         }
 
         /**
+         * GET /api/s3/download?key=file.jpg - Alternative với query parameter
+         */
+        @GetMapping("/download")
+        public ResponseEntity<byte[]> downloadFileByQuery(@RequestParam String key) {
+
+                S3DownloadResponse response = s3Service.downloadFile(key);
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.parseMediaType(response.getContentType()));
+                headers.setContentDispositionFormData("attachment", response.getFileName());
+                headers.setContentLength(response.getContentLength());
+
+                return new ResponseEntity<>(response.getContent(), headers, HttpStatus.OK);
+        }
+
+        /**
          * POST /api/s3/upload
          */
         @PostMapping("/upload")
