@@ -1,13 +1,15 @@
 package com.example.java_backend.config;
 
-import com.example.java_backend.interceptors.JwtAuthenticationInterceptor;
-// import com.example.java_backend.interceptors.LoggingInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import com.example.java_backend.interceptors.JwtAuthenticationInterceptor;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -25,9 +27,9 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(jwtAuthenticationInterceptor)
                 .addPathPatterns("/api/**")
                 .excludePathPatterns(
-                        "/api/auth/**",   // login, refresh, logout
-                        "/api/hello",     // public API
-                        "/error"          // Spring error
+                        "/api/auth/**", // login, refresh, logout
+                        "/api/hello", // public API
+                        "/error" // Spring error
                 );
     }
 
@@ -39,5 +41,10 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedHeaders("*")
                 .allowCredentials(true)
                 .maxAge(3600);
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }
